@@ -21,14 +21,12 @@ const server = http.createServer((req, res) => {
   let extname = String(path.extname(req.url)).toLowerCase();
   let reqURL = url.parse(req.url, true);
   let PathName = decodeURIComponent(reqURL.pathname);
-
-  if (extname == ".js" || extname == ".css" || extname == ".html") {
+  if (extname != ".ico" && extname != "") {
     filePath = "public/" + req.url;
     content = fs.readFileSync(filePath, { encoding: "utf-8" });
     contentType = mimeTypes[extname];
     sendResponse(res);
   }
-
   if (PathName == "/") {
     if (req.method == "POST") {
       let data = "";
@@ -43,7 +41,6 @@ const server = http.createServer((req, res) => {
     contentType = "text/html";
     sendResponse(res);
   }
-
   if (PathName == "/information") {
     const params = reqURL.query;
     content = fs.readFileSync("templates/information.html", {
@@ -57,7 +54,6 @@ const server = http.createServer((req, res) => {
     content = content.replace("{{path}}", PathName);
     content = content.replace("{{query}}", reqURL.search);
     content = content.replace("{{queries}}", queries);
-
     contentType = "text/html";
     sendResponse(res);
   }
