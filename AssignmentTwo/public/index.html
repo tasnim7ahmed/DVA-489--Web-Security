@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+
+    <title>Request information</title>
+</head>
+<body>
+
+<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+    <h5 class="my-0 mr-md-auto font-weight-normal">@home</h5>
+</div>
+
+<div class="container">
+    <div class="row">
+
+
+
+
+            <div class="col text-center">
+                <h3>Kitchen <span class="badge badge-secondary" id=kitchen_temperature>24C</span></h3>
+
+                <div>
+
+                        <button type="button" class="{{kitchen_lights_stove}}" id=kitchen_lights_stove
+                                onclick="clickLight(this.id)">Stove light
+                        </button>
+                        <button type="button" class="{{kitchen_lights_ceiling}}" id=kitchen_lights_ceiling
+                                onclick="clickLight(this.id)">Ceiling light
+                        </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="col text-center">
+                <h3>Living room <span class="badge badge-secondary" id=livingroom_temperature>22C</span></h3>
+
+                <div>
+
+                        <button type="button" class="{{livingroom_lights_sofa}}" id=livingroom_lights_sofa
+                                onclick="clickLight(this.id)">Sofa light
+                        </button>
+                        <button type="button" class="{{livingroom_lights_ceiling}}" id=livingroom_lights_ceiling
+                                onclick="clickLight(this.id)">Ceiling light
+                        </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="col text-center">
+                <h3>Bedroom <span class="badge badge-secondary" id=bedroom_temperature>20C</span></h3>
+
+                <div>
+
+                        <button type="button" class="{{bedroom_lights_bed}}" id=bedroom_lights_bed
+                                onclick="clickLight(this.id)">Bed light
+                        </button>
+                        <button type="button" class="{{bedroom_lights_ceiling}}" id=bedroom_lights_ceiling
+                                onclick="clickLight(this.id)">Ceiling light
+                        </button>
+
+                </div>
+
+            </div>
+
+
+
+
+    </div>
+</div>
+
+
+<script src="js/athome.js"></script>
+
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="js/jquery-3.6.0.min.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,16 +1,16 @@
 {
-  "name": "assignmentone",
+  "name": "assignmenttwo",
   "version": "1.0.0",
   "description": "",
   "main": "httpd.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon httpd.js",
-    "patched": "nodemon httpd-patched.js"
+    "dev": "nodemon httpd.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "jquery": "^3.6.0",
     "nodemon": "^2.0.15"
   }
 }
