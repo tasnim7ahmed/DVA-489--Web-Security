@@ -10,7 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cookie": "^0.4.1",
     "jquery": "^3.6.0",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "querystring": "^0.2.1"
   }
 }

@@ -18,14 +18,14 @@ let lights = {
   
   function refresh() {
     for (let id in lights) {
-      const path = "http://localhost:8000/" + id;
+      const path = "http://localhost:8000" + lights[id];
       $.getJSON('../config.json',(states)=>{
-        $('#' + id).attr('class',states[id])
+        $('#' + id).attr('class',states[lights[id]])
       })
     }
   
     // for (let id in temps) {
-    //     let path = 'http://localhost:8000' + temps[id];
+    //     let path = 'httpss://localhost:8000' + temps[id];
     //     $.getJSON(path, data => {
     //         $('#' + id).text(data + 'C');
     //     } )
@@ -35,7 +35,8 @@ let lights = {
   setInterval(refresh, 1000);
   
   function clickLight(id) {    
-    const path = "http://localhost:8000/" + id;
+    const path = "http://localhost:8000" + lights[id];
+    
     $.post(path, res => {      
       let currentClass = $('#' + id).attr('class')
       if(currentClass=='btn btn btn-secondary btn-sm btn-sm'){
