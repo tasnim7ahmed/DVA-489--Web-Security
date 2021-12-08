@@ -5,7 +5,8 @@
   "main": "httpd.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon httpd.js"
+    "dev": "nodemon httpd.js",
+    "encrypt": "nodemon encrypt.js"
   },
   "author": "",
   "license": "ISC",

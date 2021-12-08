@@ -9,7 +9,8 @@ let mimeTypes = {
   ".html": "text/html",
   ".js": "text/javascript",
   ".css": "text/css",
-  ".json": "application/json"
+  ".json": "application/json",
+  "":"text/plain"
 };
 let content = undefined;
 let contentType = undefined;
@@ -52,23 +53,18 @@ const server = http.createServer((req, res) => {
   let extname = String(path.extname(req.url)).toLowerCase();
   let reqURL = url.parse(req.url, true);
   let PathName = decodeURIComponent(reqURL.pathname);
-
+  console.log(extname)
   //console.log(reqURL)
   //console.log(PathName)
 
-  if (extname != ".ico" && extname != "") {
-    filePath = "public" + req.url;
-    content = fs.readFileSync(filePath, { encoding: "utf-8" });
-    contentType = mimeTypes[extname];
-    sendResponse(res);
-  }
+  
   if (PathName == "/") {
     if(req.method=="GET"){
       goHome(res)
     }
     
   }
-  if(PathName=='/login'){
+  else if(PathName=='/login'){
     if(req.method=='GET'){
       content = fs.readFileSync("public/login.html", { encoding: "utf-8" });
       contentType = "text/html";
@@ -115,7 +111,7 @@ const server = http.createServer((req, res) => {
       });
     }
   }
-  if(PathName=='/kitchen/lights/stove'){
+  else if(PathName=='/kitchen/lights/stove'){
     
     states = fs.readFileSync('public/config.json',{encoding: "utf-8"})
     states = JSON.parse(states.toString())
@@ -128,7 +124,7 @@ const server = http.createServer((req, res) => {
     //fs.writeFileSync('public/config.json', JSON.stringify(states))
     fs.writeFileSync('public/config.json',JSON.stringify(states))
   }
-  if(PathName=='/kitchen/lights/ceiling'){
+  else if(PathName=='/kitchen/lights/ceiling'){
     
     states = fs.readFileSync('public/config.json',{encoding: "utf-8"})
     states = JSON.parse(states.toString())
@@ -141,7 +137,7 @@ const server = http.createServer((req, res) => {
     fs.writeFileSync('public/config.json', JSON.stringify(states))
   }
 
-  if(PathName=='/livingroom/lights/sofa'){
+  else if(PathName=='/livingroom/lights/sofa'){
     
     states = fs.readFileSync('public/config.json',{encoding: "utf-8"})
     states = JSON.parse(states.toString())
@@ -153,7 +149,7 @@ const server = http.createServer((req, res) => {
     }
     fs.writeFileSync('public/config.json', JSON.stringify(states))
   }
-  if(PathName=='/livingroom/lights/ceiling'){
+  else if(PathName=='/livingroom/lights/ceiling'){
     
     states = fs.readFileSync('public/config.json',{encoding: "utf-8"})
     states = JSON.parse(states.toString())
@@ -166,7 +162,7 @@ const server = http.createServer((req, res) => {
     fs.writeFileSync('public/config.json', JSON.stringify(states))
   }
 
-  if(PathName=='/bedroom/lights/bed'){
+  else if(PathName=='/bedroom/lights/bed'){
     
     states = fs.readFileSync('public/config.json',{encoding: "utf-8"})
     states = JSON.parse(states.toString())
@@ -178,7 +174,7 @@ const server = http.createServer((req, res) => {
     }
     fs.writeFileSync('public/config.json', JSON.stringify(states))
   }
-  if(PathName=='/bedroom/lights/ceiling'){
+  else if(PathName=='/bedroom/lights/ceiling'){
     
     states = fs.readFileSync('public/config.json',{encoding: "utf-8"})
     states = JSON.parse(states.toString())
@@ -189,6 +185,13 @@ const server = http.createServer((req, res) => {
       states['/bedroom/lights/ceiling']="btn btn btn-secondary btn-sm btn-sm"
     }
     fs.writeFileSync('public/config.json', JSON.stringify(states))
+  }
+
+  else if (extname != ".ico") {
+    filePath = "public" + req.url;
+    content = fs.readFileSync(filePath, { encoding: "utf-8" });
+    contentType = mimeTypes[extname];
+    sendResponse(res);
   }
 
   res.end();
