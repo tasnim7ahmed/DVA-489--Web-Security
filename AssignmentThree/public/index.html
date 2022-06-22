@@ -29,10 +29,10 @@
         <h2>Sign in to Squeak!</h2>
     </div>
 
-    <form class="mt-2">
+    <form class="mt-2" action="/signup" method="POST">
         <div class="form-group offset-4 row">
             <div class="col-6">
-                <input type="text" class="form-control" id="signupusername" placeholder="Name">
+                <input type="text" class="form-control" id="signupusername" name="signupusername" placeholder="Name">
                 <div class="invalid-feedback">
                     Please choose a valid username.
                 </div>
@@ -42,7 +42,7 @@
 
         <div class="form-group offset-4 row">
             <div class="col-6">
-                <input type="password" class="form-control" id="signuppassword" placeholder="Password">
+                <input type="password" class="form-control" id="signuppassword" name="signuppassword" placeholder="Password">
                 <div class="invalid-feedback">
                     Please choose a valid password.
                 </div>
@@ -52,7 +52,7 @@
 
         <div class="form-group offset-4 row">
             <div class="col-8">
-                <button onclick="signup(this);" type="button" class="btn btn-primary disabled">Sign up!</button>
+                <button type="submit" class="btn btn-primary">Sign Up!</button>
             </div>
 
         </div>

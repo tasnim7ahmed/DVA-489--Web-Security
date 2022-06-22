@@ -2,8 +2,47 @@ const fs = require('fs')
 
 const postSignIn = (req, res) =>{
     const {username, password} = req.body;
-    console.log(username+''+password)
-    res.redirect('/home')
+    credentials = fs.readFileSync('passwd',{encoding:"utf-8"})
+    credentials = (JSON.parse(String(credentials)))
+    let flag = false
+    for (let credential in credentials){
+        data = (credentials[credential])
+        if(data['username']==username && data['password']==password)
+        {
+            flag = true
+            break
+        }
+    }
+    if(flag)res.redirect('/home')
+}
+
+const postSignUp = (req, res) =>{
+    const {username, password, signupusername, signuppassword} = req.body;
+    credentials = fs.readFileSync('passwd',{encoding:"utf-8"})
+    credentials = (JSON.parse(String(credentials)))
+    let flag = false
+    let cnt = 1;
+    for (let credential in credentials){
+        cnt+=1
+        data = (credentials[credential])
+        if(data['username']==signupusername)
+        {
+            flag = true
+            break
+        }
+
+    }
+    if(flag){
+        console.log("Username exists!")
+    }else{
+        new_cred = JSON.stringify(credentials)
+        new_cred = new_cred.slice(0, new_cred.length-1)
+        new_cred+=',"'+cnt+'": {"username":"'+signupusername+'", "password":"'+signuppassword+'"}}'
+        new_cred = JSON.parse(new_cred)
+        fs.writeFileSync('passwd', JSON.stringify(new_cred))
+        console.log("Account successfully created!")
+        res.redirect('/')
+    }
 }
 
 const getIndex = (req, res) =>{
@@ -21,5 +60,6 @@ const getHome = (req, res) =>{
 module.exports = {
   postSignIn,
   getIndex,
-  getHome
+  getHome,
+  postSignUp
 };
