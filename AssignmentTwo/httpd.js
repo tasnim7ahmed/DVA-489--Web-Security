@@ -75,6 +75,9 @@ const server = http.createServer((req, res) => {
       sendResponse(res);
     }
 
+    res.writeHead(200, {'Set-Cookie':'athome-session=331', 'Content-Type':'text/plain'})
+    res.writeHead(302, {'Set-Cookie':'athome-session=331', 'Content-Type':'text/plain','Location':'https://localhost:8000'})
+
     if(req.method=='POST'){
       let data = "";
       req.on("data", (chunk) => {
