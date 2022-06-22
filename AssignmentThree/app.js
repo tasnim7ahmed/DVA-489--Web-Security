@@ -1,21 +1,12 @@
 const express = require('express')
+const path = require('path')
 const app = express()
 
+app.set("view options", {layout: false});
+app.use(express.static(__dirname + '/public'));
+app.use(express.urlencoded({ extended: false }));
 
-app.get('/', (req, res)=>{
-    res.status(200).send("<h1>Hello World</h1>")
-
-})
-
-app.get('/about', (req, res)=>{
-    res.cookie('username','Ivan')
-    res.send("<h1>About</h1>")
-
-})
-
-app.use((req,res)=>{
-    res.status(401).send("Page Not Found")
-
-})
+const Routes = require("./routes");
+app.use(Routes);
 
 module.exports = app
