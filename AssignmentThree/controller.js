@@ -15,6 +15,7 @@ const postSignIn = (req, res) =>{
     }
     sessID = Math.floor(100000 + Math.random() * 900000)
     squeak_session = '{"sessionid":"'+sessID+'","username":"'+username+'"}'
+    squeak_session = JSON.parse(squeak_session)
 
     console.log(JSON.stringify(squeak_session))
     if(flag)res.redirect('/home')
