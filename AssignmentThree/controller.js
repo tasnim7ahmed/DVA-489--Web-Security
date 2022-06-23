@@ -13,6 +13,10 @@ const postSignIn = (req, res) =>{
             break
         }
     }
+    sessID = Math.floor(100000 + Math.random() * 900000)
+    squeak_session = '{"sessionid":"'+sessID+'","username":"'+username+'"}'
+
+    console.log(JSON.stringify(squeak_session))
     if(flag)res.redirect('/home')
 }
 
@@ -45,12 +49,14 @@ const postSignUp = (req, res) =>{
     }
 }
 
+
 const getIndex = (req, res) =>{
     res.render('index.html');
 }
 
 const getHome = (req, res) =>{
     console.log('In getHome')
+    
     fs.readFile(__dirname + '/public/home.html', 'utf8', (err, text) => {
         res.send(text);
     });
