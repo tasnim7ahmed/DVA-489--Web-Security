@@ -1,4 +1,5 @@
-const fs = require('fs')
+const fs = require('fs');
+
 
 const postSignIn = (req, res) =>{
     const {username, password} = req.body;
@@ -13,12 +14,26 @@ const postSignIn = (req, res) =>{
             break
         }
     }
-    sessID = Math.floor(100000 + Math.random() * 900000)
-    squeak_session = '{"sessionid":"'+sessID+'","username":"'+username+'"}'
-    squeak_session = JSON.parse(squeak_session)
 
-    console.log(JSON.stringify(squeak_session))
-    if(flag)res.redirect('/home')
+
+    if(flag){
+        sessID = Math.floor(100000 + Math.random() * 900000)
+        squeak_session = '{"sessionid":"'+sessID+'","username":"'+username+'"}'
+        squeak_session = JSON.parse(squeak_session)
+
+        console.log(JSON.stringify(squeak_session))
+
+        // res.cookie('squeak_session',squeak_session, { maxAge: 900000, httpOnly: true });
+        // httpOnly: true will protect the cookie. this is disabled now to implement the attack
+
+        res.cookie('squeak_session',squeak_session);
+
+        console.log('cookie created successfully');
+        res.redirect('/home')
+
+    }else{
+        res.redirect('/');
+    }
 }
 
 const postSignUp = (req, res) =>{
@@ -52,7 +67,14 @@ const postSignUp = (req, res) =>{
 
 
 const getIndex = (req, res) =>{
-    res.render('index.html');
+    var cookie = req.cookies.cookieName;
+    if (cookie === undefined) {
+        res.render('index.html');
+    }else {
+        // yes, cookie was already present 
+        console.log('cookie exists', cookie);
+        res.redirect('/home')
+    }
 }
 
 const getHome = (req, res) =>{
@@ -63,10 +85,19 @@ const getHome = (req, res) =>{
     });
 }
 
+const getSignOut = (req, res) =>{
+
+    res.clearCookie('squeak_session')
+    console.log('Signing Out')
+    
+    res.redirect('/')
+}
+
 
 module.exports = {
   postSignIn,
   getIndex,
   getHome,
-  postSignUp
+  postSignUp,
+  getSignOut
 };
