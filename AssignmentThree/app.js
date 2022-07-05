@@ -8,7 +8,8 @@ app.use(express.static(__dirname + '/public'));
 app.use(express.urlencoded({ extended: false }));
 
 const Routes = require("./routes");
-app.use(Routes);
 app.use(cookieParser());
+app.use(Routes);
+
 
 module.exports = app

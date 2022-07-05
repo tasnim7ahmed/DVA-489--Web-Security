@@ -1,5 +1,7 @@
 const express = require("express");
+const {isAuthenticated} = require("./middleware")
 const router = express.Router();
+
 const {
   postSignIn,
   postSignUp,
@@ -8,11 +10,12 @@ const {
   getHome
 } = require("./controller");
 
-router.get("/", getIndex);
-router.get("/home", getHome);
+
+router.get("/home", isAuthenticated, getHome);
 router.post("/signin", postSignIn);
 router.post("/signup", postSignUp);
 router.get("/signout", getSignOut);
+router.get("/", getIndex);
 
 
 module.exports = router;

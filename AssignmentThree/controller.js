@@ -67,22 +67,32 @@ const postSignUp = (req, res) =>{
 
 
 const getIndex = (req, res) =>{
-    var cookie = req.cookies.cookieName;
-    if (cookie === undefined) {
-        res.render('index.html');
-    }else {
-        // yes, cookie was already present 
+    var cookie = req.cookies.squeak_session
+    console.log(JSON.stringify(cookie))
+    if(cookie)
+    {
         console.log('cookie exists', cookie);
-        res.redirect('/home')
+        res.redirect('/home');
+      
     }
+    else{
+        console.log('cookie DOES NOT exist', cookie);
+        res.render('index.html')
+    }
+   
+    
 }
 
 const getHome = (req, res) =>{
+
     console.log('In getHome')
-    
+
     fs.readFile(__dirname + '/public/home.html', 'utf8', (err, text) => {
         res.send(text);
     });
+
+
+    
 }
 
 const getSignOut = (req, res) =>{
