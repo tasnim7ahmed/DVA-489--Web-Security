@@ -1,18 +1,1 @@
-{
-  "1":{
-    "username": "Tasnim",
-    "post": "Hello World!",
-    "time": "XXX"
-  },
-
-  "2":{
-    "username": "Ivan",
-    "post": "World!",
-    "time": "XXX"
-  },
-  "3":{
-    "username": "Voxod",
-    "post": "World!",
-    "time": "XXX"
-  }
-}
+{"1":{"username":"daniel","post":"cx","time":"Friday, August 26, 2022, 01:54:57"},"2":{"username":"daniel","post":"xx","time":"Friday, August 26, 2022, 01:54:59"},"3":{"username":"daniel","post":"dsad","time":"Friday, August 26, 2022, 01:55:01"}}
