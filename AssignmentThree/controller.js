@@ -89,22 +89,28 @@ const getHome = (req, res) => {
   squeaks = fs.readFileSync("squeaks", { encoding: "utf-8" });
   squeaks = JSON.parse(String(squeaks));
   posts = "";
+  keys = [];
   for (let i in squeaks) {
+    keys.push(i);
+  }
+  keys = keys.reverse();
+
+  for (let i in keys) {
     post = `<div class="card mb-2">
     <div class="card-header">
-      ${squeaks[i]["username"]}
-      <span class="float-right">${squeaks[i]["time"]}</span>
+      ${squeaks[keys[i]]["username"]}
+      <span class="float-rkey[g]ht">${squeaks[keys[i]]["time"]}</span>
     </div>
     <div class="card-body">
       <p class="card-text">
-      ${squeaks[i]["post"]}
+      ${squeaks[keys[i]]["post"]}
       </p>
     </div>
   </div>`;
     posts += post;
   }
   var cookie = req.cookies.squeak_session;
-  console.log(cookie.username);
+
   fs.readFile(__dirname + "/public/home.html", "utf8", (err, text) => {
     text = text.replace("{{currentUser}}", cookie.username);
     text = text.replace("{{posts}}", posts);
@@ -116,14 +122,8 @@ const postHome = (req, res) => {
   //const { squeak } = req.body
   //console.log(squeak)
   var cookie = req.cookies.squeak_session;
-  
+
   squeaks = fs.readFileSync("squeaks", { encoding: "utf-8" });
-
-  
-
-  
-  
-
 
   res.redirect("/home");
 };
