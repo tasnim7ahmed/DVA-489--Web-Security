@@ -88,7 +88,7 @@ const getHome = (req, res) => {
   console.log("In getHome");
   squeaks = fs.readFileSync("squeaks", { encoding: "utf-8" });
   squeaks = JSON.parse(String(squeaks));
-  console.log(JSON.stringify(squeaks));
+  console.log(JSON.stringify(squeaks["2"]));
   var cookie = req.cookies.squeak_session;
   console.log(cookie.username);
   fs.readFile(__dirname + "/public/home.html", "utf8", (err, text) => {
