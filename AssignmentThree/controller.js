@@ -113,31 +113,19 @@ const getHome = (req, res) => {
 };
 
 const postHome = (req, res) => {
-  console.log("In getHome");
-  squeaks = fs.readFileSync("squeaks", { encoding: "utf-8" });
-  squeaks = JSON.parse(String(squeaks));
-  posts = "";
-  for (let i in squeaks) {
-    post = `<div class="card mb-2">
-    <div class="card-header">
-      ${squeaks[i]["username"]}
-      <span class="float-right">${squeaks[i]["time"]}</span>
-    </div>
-    <div class="card-body">
-      <p class="card-text">
-      ${squeaks[i]["post"]}
-      </p>
-    </div>
-  </div>`;
-    posts += post;
-  }
+  //const { squeak } = req.body
+  //console.log(squeak)
   var cookie = req.cookies.squeak_session;
-  console.log(cookie.username);
-  fs.readFile(__dirname + "/public/home.html", "utf8", (err, text) => {
-    text = text.replace("{{currentUser}}", cookie.username);
-    text = text.replace("{{posts}}", posts);
-    res.send(text);
-  });
+  
+  squeaks = fs.readFileSync("squeaks", { encoding: "utf-8" });
+
+  
+
+  
+  
+
+
+  res.redirect("/home");
 };
 
 const getSignOut = (req, res) => {
