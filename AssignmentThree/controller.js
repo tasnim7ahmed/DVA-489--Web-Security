@@ -25,7 +25,10 @@ const postSignIn = (req, res) => {
     // res.cookie('squeak_session',squeak_session, { maxAge: 900000, httpOnly: true });
     // httpOnly: true will protect the cookie. this is disabled now to implement the attack
 
-    res.cookie("squeak_session", squeak_session);
+    res.cookie("squeak_session", squeak_session, {
+      secure: true,
+      httpOnly: true,
+    });
 
     console.log("cookie created successfully");
     res.redirect("/home");
@@ -78,9 +81,10 @@ const getIndex = (req, res) => {
     res.redirect("/home");
   } else {
     console.log("cookie DOES NOT exist", cookie);
-    fs.readFile(__dirname + "/public/landingPage.html", "utf8", (err, text) => {
-      res.send(text);
-    });
+    // fs.readFile(__dirname + "/public/landingPage.html", "utf8", (err, text) => {
+    //   res.send(text);
+    // });
+    res.render("landingPageView");
   }
 };
 
@@ -88,7 +92,7 @@ const getHome = (req, res) => {
   console.log("In getHome");
   squeaks = fs.readFileSync("squeaks", { encoding: "utf-8" });
   squeaks = JSON.parse(String(squeaks));
-  posts = "";
+  posts = [];
   keys = [];
   for (let i in squeaks) {
     keys.push(i);
@@ -96,26 +100,19 @@ const getHome = (req, res) => {
   keys = keys.reverse();
 
   for (let i in keys) {
-    post = `<div class="card mb-2">
-    <div class="card-header">
-      ${squeaks[keys[i]]["username"]}
-      <span class="float-right">${squeaks[keys[i]]["time"]}</span>
-    </div>
-    <div class="card-body">
-      <p class="card-text">
-      ${squeaks[keys[i]]["post"]}
-      </p>
-    </div>
-  </div>`;
-    posts += post;
+    posts.push(squeaks[keys[i]]);
   }
-  var cookie = req.cookies.squeak_session;
 
-  fs.readFile(__dirname + "/public/home.html", "utf8", (err, text) => {
-    text = text.replace("{{currentUser}}", cookie.username);
-    text = text.replace("{{posts}}", posts);
-    res.send(text);
-  });
+  var cookie = req.cookies.squeak_session;
+  let data = { currentUser: cookie.username, posts: posts };
+  console.log(data["posts"]);
+  res.render("homeView", data);
+
+  // fs.readFile(__dirname + "/public/home.html", "utf8", (err, text) => {
+  //   text = text.replace("{{currentUser}}", cookie.username);
+  //   text = text.replace("{{posts}}", posts);
+  //   res.send(text);
+  // });
 };
 
 const postHome = (req, res) => {
