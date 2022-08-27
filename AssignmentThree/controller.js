@@ -38,7 +38,6 @@ const postSignIn = (req, res) => {
 };
 
 const postSignUp = (req, res) => {
-  console.log("In post");
   const { username, password, signupusername, signuppassword } = req.body;
   credentials = fs.readFileSync("passwd", { encoding: "utf-8" });
   credentials = JSON.parse(String(credentials));
@@ -52,8 +51,17 @@ const postSignUp = (req, res) => {
       break;
     }
   }
+  if (signuppassword.length < 8 || signupusername.length < 4) {
+    flag = true;
+  }
+
+  if (signuppassword.match(new RegExp(signupusername)) != null) {
+    console.log(signuppassword.match(new RegExp(signupusername)));
+    flag = true;
+  }
+
   if (flag) {
-    console.log("Username exists!");
+    console.log("Either Username or Password is invalid!");
   } else {
     new_cred = JSON.stringify(credentials);
     new_cred = new_cred.slice(0, new_cred.length - 1);
@@ -68,8 +76,8 @@ const postSignUp = (req, res) => {
     new_cred = JSON.parse(new_cred);
     fs.writeFileSync("passwd", JSON.stringify(new_cred));
     console.log("Account successfully created!");
-    res.redirect("/");
   }
+  res.redirect("/");
 };
 
 const getIndex = (req, res) => {
