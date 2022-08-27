@@ -54,11 +54,18 @@ const postSignUp = (req, res) => {
   if (signuppassword.length < 8 || signupusername.length < 4) {
     flag = true;
   }
+  if(checkRegex(signupusername) && checkRegex(signuppassword)){
+    
+    if (signuppassword.search(signupusername) != -1) {
+      
+      flag = true;
+    }
 
-  if (signuppassword.match(new RegExp(signupusername)) != null) {
-    console.log(signuppassword.match(new RegExp(signupusername)));
-    flag = true;
   }
+  else{
+    flag = true
+  }
+  
 
   if (flag) {
     console.log("Either Username or Password is invalid!");
@@ -77,8 +84,26 @@ const postSignUp = (req, res) => {
     fs.writeFileSync("passwd", JSON.stringify(new_cred));
     console.log("Account successfully created!");
   }
+  
   res.redirect("/");
 };
+
+const checkChar = (text,c) => {
+  for (i=0; i<text.length; i++){
+    if(text[i] == c){
+      return true
+    }
+    return false
+  }
+}
+
+const checkRegex = (text)=>{
+  if (checkChar(text,'^') || checkChar(text,'+') || checkChar(text,'$') || checkChar(text,'*') || checkChar(text,'[') || checkChar(text,']')){
+    return false
+  }
+  return true
+
+}
 
 const getIndex = (req, res) => {
   console.log("In getIndex");
