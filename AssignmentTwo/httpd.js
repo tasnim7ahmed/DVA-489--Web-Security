@@ -96,7 +96,7 @@ const server = http.createServer((req, res) => {
         
           if(credentials[username]==password)
           {
-            console.log("Login SUccessful")
+            console.log("Login Successful")
 
 
             // let setCookie = cookie.serialize('athome-session',getRandomInt(100,999).toString())
