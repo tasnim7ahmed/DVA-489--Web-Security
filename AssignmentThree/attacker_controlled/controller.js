@@ -22,7 +22,10 @@ var options = {
     method: 'POST',
     headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Content-Length': Buffer.byteLength(data)
+        'Content-Length': Buffer.byteLength(data),
+        'Origin': 'http://localhost:8000',
+        'Referer': 'http://localhost:8000',
+        'Host': 'http://localhost:8000',
     }
 };
 
@@ -30,6 +33,7 @@ var req = http.request(options, function(res)
 {
     res.setEncoding('utf8');
     res.on('data', function (chunk) {
+      console.log(chunk)
         console.log("body: " + chunk);
     });
 });
