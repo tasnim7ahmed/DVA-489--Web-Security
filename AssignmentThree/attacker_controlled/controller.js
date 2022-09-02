@@ -5,7 +5,9 @@ const querystring = require("querystring");
 
 const getIndex = (req, res) => {
     console.log("In attackPage");
-    res.render("attackPageView");
+    res.render("attackPageView",{
+        data:'<a href="#" onclick="this.parentNode.submit()">here</a>'
+    });
 };
 
 const postAttack = () => {
