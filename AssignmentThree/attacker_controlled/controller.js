@@ -1,53 +1,41 @@
 const fs = require("fs");
+const http = require('http');
+const querystring = require("querystring");
+
 
 const getIndex = (req, res) => {
     console.log("In attackPage");
     res.render("attackPageView");
 };
 
-const postAttack = (req, res) => {
-    const { squeak } = req.body;
-    //console.log(squeak)
-    var cookie = req.cookies.squeak_session;
-  
-    squeaks = fs.readFileSync("squeaks", { encoding: "utf-8" });
-    squeaks = JSON.parse(String(squeaks));
-    keys = [];
-    for (let i in squeaks) {
-      keys.push(i);
+const postAttack = () => {
+
+  console.log("I am here!")
+  var data = querystring.stringify({
+    squeak: "myname",
+});
+
+var options = {
+    host: 'localhost',
+    port: 8000,
+    path: '/home',
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': Buffer.byteLength(data)
     }
-    keys = keys.reverse();
-    post_id = parseInt(keys[0]) + 1;
-    if (keys.length == 0) {
-      post_id = 1;
-    }
-    console.log(post_id);
-    post_id = post_id.toString();
-    console.log(post_id);
-  
-    let options = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    };
-    let prnDt = new Date().toLocaleTimeString("en-us", options);
-  
-    console.log(prnDt);
-  
-    squeaks[post_id] = {
-      username: cookie.username,
-      post: squeak,
-      time: prnDt,
-    };
-  
-    fs.writeFileSync("squeaks", JSON.stringify(squeaks));
-    res.redirect("/home");
-  };
+};
+
+var req = http.request(options, function(res)
+{
+    res.setEncoding('utf8');
+    res.on('data', function (chunk) {
+        console.log("body: " + chunk);
+    });
+});
+req.write(data);
+req.end();
+};
 
 module.exports = {
     getIndex,

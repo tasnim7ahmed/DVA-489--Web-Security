@@ -149,6 +149,7 @@ const getHome = (req, res) => {
 };
 
 const postHome = (req, res) => {
+  console.log(req)
   const { squeak } = req.body;
   //console.log(squeak)
   var cookie = req.cookies.squeak_session;
