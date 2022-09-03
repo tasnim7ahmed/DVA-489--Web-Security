@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+
+    <title>Request information</title>
+  </head>
+  <body>
+    <div
+      class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow"
+    >
+      <h5 class="my-0 mr-md-auto font-weight-normal">Squeak!</h5>
+
+      <form class="form-inline w-75 mt-2 mt-md-0" method="POST" action="/home">
+        <div class="input-group mr-sm-2 w-75">
+          <div class="input-group-prepend">
+            <div class="input-group-text">{{currentUser}}</div>
+          </div>
+          <input
+            type="text"
+            name="squeak"
+            class="form-control"
+            id="squeak"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary mr-sm-2 disabled">
+          Squeak!
+        </button>
+      </form>
+
+      <form class="form-inline mt-2 mt-md-0" action="/signout" method="GET">
+        <button type="submit" class="btn btn-primary">Sign out</button>
+      </form>
+    </div>
+
+    <div class="container">{{posts}}</div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/squeak.js"></script>
+  </body>
+</html>

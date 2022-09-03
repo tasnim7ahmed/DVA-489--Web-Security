@@ -5,14 +5,12 @@ const querystring = require("querystring");
 
 const getIndex = (req, res) => {
     console.log("In attackPage");
-    res.render("attackPageView",{
-        data:'<a href="#" onclick="this.parentNode.submit()">here</a>'
-    });
+    res.render("attackPageView");
 };
 
 const postAttack = () => {
 
-  console.log("I am here!")
+  console.log("in postAttack!")
   var data = querystring.stringify({
     squeak: "myname",
 });
