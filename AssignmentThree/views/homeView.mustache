@@ -14,6 +14,23 @@
     <title>Request information</title>
   </head>
   <body>
+
+    <script>
+    function getTokenAndInject() {
+        $("#errorMessage").hide();
+        axios.post('/home', {withCredentials: true})
+            .then(response => {
+                $("#contentForm").append(
+                    `<input type="text" hidden name="inputToken" id="inputToken" value=${response.data.token} />`
+                )
+            })
+            .catch(error => {
+                $("#errorMessage").show();
+                window.location.href = '/';
+            });
+    }
+    </script>
+
     <div
       class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow"
     >

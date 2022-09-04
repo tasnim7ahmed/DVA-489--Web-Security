@@ -10,12 +10,12 @@ const getIndex = (req, res) => {
 
 const postAttack = () => {
 
-  console.log("in postAttack!")
-  var data = querystring.stringify({
-    squeak: "myname",
-});
+    console.log("in postAttack!")
+    var data = querystring.stringify({
+        squeak: "myname",
+    });
 
-var options = {
+    var options = {
     host: 'localhost',
     port: 8000,
     path: '/home',
@@ -33,7 +33,7 @@ var req = http.request(options, function(res)
 {
     res.setEncoding('utf8');
     res.on('data', function (chunk) {
-      console.log(chunk)
+        console.log(chunk)
         console.log("body: " + chunk);
     });
 });

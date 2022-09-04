@@ -1,7 +1,11 @@
 const fs = require("fs");
+const uuid = require('uuid');
+
+
+const SESSION_IDS = {};
 
 const postSignIn = (req, res) => {
-  console.log("In post");
+  console.log("In postSignin");
   const { username, password } = req.body;
   credentials = fs.readFileSync("passwd", { encoding: "utf-8" });
   credentials = JSON.parse(String(credentials));
@@ -15,9 +19,15 @@ const postSignIn = (req, res) => {
   }
 
   if (flag) {
-    sessID = Math.floor(100000 + Math.random() * 900000);
+    const SESSION_ID = uuid.v1();
+    const CSRF_TOKEN = uuid.v4();
+
+    SESSION_IDS[SESSION_ID] = CSRF_TOKEN;
+
+    console.log(CSRF_TOKEN);
+
     squeak_session =
-      '{"sessionid":"' + sessID + '","username":"' + username + '"}';
+      '{"sessionid":"' + SESSION_ID + '","username":"' + username + '"}';
     squeak_session = JSON.parse(squeak_session);
 
     console.log(JSON.stringify(squeak_session));
@@ -108,12 +118,13 @@ const checkRegex = (text)=>{
 const getIndex = (req, res) => {
   console.log("In getIndex");
   var cookie = req.cookies.squeak_session;
-  console.log(JSON.stringify(cookie));
-  if (cookie) {
-    console.log("cookie exists", cookie);
+
+  const sessionID = req.cookies['sessionid'];
+  if (cookie && sessionID && SESSION_IDS[sessionID]) {
+    console.log("Login: Valid Session Found !");
     res.redirect("/home");
   } else {
-    console.log("cookie DOES NOT exist", cookie);
+    console.log("Valid Session Not Found", cookie);
     // fs.readFile(__dirname + "/public/landingPage.html", "utf8", (err, text) => {
     //   res.send(text);
     // });
@@ -138,7 +149,7 @@ const getHome = (req, res) => {
 
   var cookie = req.cookies.squeak_session;
   let data = { currentUser: cookie.username, posts: posts };
-  console.log(data["posts"]);
+  //console.log(data["posts"]);
   res.render("homeView", data);
 
   // fs.readFile(__dirname + "/public/home.html", "utf8", (err, text) => {
@@ -149,11 +160,29 @@ const getHome = (req, res) => {
 };
 
 const postHome = (req, res) => {
-  console.log(req)
+  //console.log(req)
   const { squeak } = req.body;
   //console.log(squeak)
   var cookie = req.cookies.squeak_session;
 
+  const inputTitle = req.body.inputTitle;
+  const inputContent = req.body.inputContent;
+  const inputToken = req.body.inputToken;
+  const sessionID = req.cookies['sessionid'];
+
+  console.log(SESSION_IDS[sessionID])
+  console.log(inputToken)
+
+
+  if (SESSION_IDS[sessionID] && SESSION_IDS[sessionID] === inputToken) {
+    console.log("Post Content: Valid Session Found !");
+    
+    // put the entire squeak posting part here
+  } else {
+    console.log("Post Content: No Valid Session Found !");
+  }
+
+  // this part should go inside the previous if
   squeaks = fs.readFileSync("squeaks", { encoding: "utf-8" });
   squeaks = JSON.parse(String(squeaks));
   keys = [];
@@ -165,9 +194,9 @@ const postHome = (req, res) => {
   if (keys.length == 0) {
     post_id = 1;
   }
-  console.log(post_id);
+  //console.log(post_id);
   post_id = post_id.toString();
-  console.log(post_id);
+  //console.log(post_id);
 
   let options = {
     weekday: "long",
@@ -181,7 +210,7 @@ const postHome = (req, res) => {
   };
   let prnDt = new Date().toLocaleTimeString("en-us", options);
 
-  console.log(prnDt);
+  //console.log(prnDt);
 
   squeaks[post_id] = {
     username: cookie.username,
@@ -195,6 +224,10 @@ const postHome = (req, res) => {
 
 const getSignOut = (req, res) => {
   console.log("In getSignout");
+  const sessionID = req.cookies['sessionid'];
+  delete SESSION_IDS[sessionID];
+
+  console.log(sessionID + ': Removed');
 
   res.clearCookie("squeak_session");
   console.log("Signing Out");

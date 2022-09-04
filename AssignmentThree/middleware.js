@@ -2,9 +2,9 @@
 
 const isAuthenticated = (req, res, next)=>{
     console.log('hereXX')
-    console.log(req)
+    //console.log(req)
     var cookie = req.cookies.squeak_session
-    console.log(JSON.stringify(cookie))
+    //console.log(JSON.stringify(cookie))
     if(cookie)
     {
         next()
