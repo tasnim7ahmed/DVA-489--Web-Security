@@ -2,6 +2,8 @@ const fs = require("fs");
 const uuid = require('uuid');
 
 
+const SESSION_IDS = {};
+
 const postSignIn = (req, res) => {
   console.log("In postSignin");
   console.log(req.body)
@@ -126,6 +128,8 @@ const getIndex = (req, res) => {
   if (!req.session.csrf) {
     req.session.csrf = uuid.v4();
   }
+
+  SESSION_IDS[SESSION_ID] = req.session.csrf;
 
   let data = { token: req.session.csrf };
 
