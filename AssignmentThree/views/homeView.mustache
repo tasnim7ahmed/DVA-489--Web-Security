@@ -26,6 +26,7 @@
           <div class="input-group-prepend">
             <div class="input-group-text">{{currentUser}}</div>
           </div>
+          <input type="hidden" name="csrf" value="{{token}}">
           <input
             type="text"
             name="squeak"

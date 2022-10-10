@@ -11,13 +11,12 @@ const postSignIn = (req, res) => {
   credentials = fs.readFileSync("passwd", { encoding: "utf-8" });
   credentials = JSON.parse(String(credentials));
 
-  console.log(req.body.csrf);
 
   let flag = false;
 
   for (let credential in credentials) {
     data = credentials[credential];
-    if (data["username"] == username && data["password"] == password && req.body.csrf == req.session.csrf) {
+    if (data["username"] == username && data["password"] == password) {
       flag = true;
       break;
     }
@@ -25,10 +24,10 @@ const postSignIn = (req, res) => {
 
   if (flag) {
 
-    const SESSION_ID = uuid.v1();
+    const sessionID = uuid.v1();
 
     squeak_session =
-      '{"sessionid":"' + SESSION_ID + '","username":"' + username + '"}';
+      '{"sessionid":"' + sessionID + '","username":"' + username + '"}';
     squeak_session = JSON.parse(squeak_session);
 
     console.log(JSON.stringify(squeak_session));
@@ -123,19 +122,11 @@ const getIndex = (req, res) => {
   console.log("In getIndex");
   var cookie = req.cookies.squeak_session;
 
-  req.session = {};
-  
-  if (!req.session.csrf) {
-    req.session.csrf = uuid.v4();
-  }
-
-  SESSION_IDS[SESSION_ID] = req.session.csrf;
-
-  let data = { token: req.session.csrf };
-
-  console.log(req.session.csrf)
 
   const sessionID = req.cookies['sessionid'];
+  
+
+
   if (cookie && sessionID) {
     console.log("Login: Valid Session Found !");
     res.redirect("/home");
@@ -144,7 +135,7 @@ const getIndex = (req, res) => {
     // fs.readFile(__dirname + "/public/landingPage.html", "utf8", (err, text) => {
     //   res.send(text);
     // });
-    res.render("landingPageView", data);
+    res.render("landingPageView");
     
   }
 };
@@ -165,7 +156,20 @@ const getHome = (req, res) => {
   }
 
   var cookie = req.cookies.squeak_session;
-  let data = { currentUser: cookie.username, posts: posts };
+  var sessionID = cookie.sessionid;
+
+  req.session = {};
+  
+  if (!req.session.csrf) {
+    req.session.csrf = uuid.v4();
+  }
+
+  SESSION_IDS[sessionID] = req.session.csrf;
+
+  console.log(req.session.csrf);
+  console.log(SESSION_IDS[sessionID]);
+
+  let data = { currentUser: cookie.username, posts: posts, token: req.session.csrf };
   //console.log(data["posts"]);
   res.render("homeView", data);
 
@@ -177,11 +181,20 @@ const getHome = (req, res) => {
 };
 
 const postHome = (req, res) => {
-  //console.log(req)
+  console.log(req.body)
   const { squeak } = req.body;
   //console.log(squeak)
   var cookie = req.cookies.squeak_session;
+  var flag = false;
+  console.log(req.body.csrf)
+  console.log(SESSION_IDS[cookie.sessionid])
+  if(req.body.csrf == SESSION_IDS[cookie.sessionid] && req.body.csrf)
+  {
+    flag = true;
+    console.log("flag true")
+  }
 
+  if(flag){
   // this part should go inside the previous if
   squeaks = fs.readFileSync("squeaks", { encoding: "utf-8" });
   squeaks = JSON.parse(String(squeaks));
@@ -219,6 +232,7 @@ const postHome = (req, res) => {
   };
 
   fs.writeFileSync("squeaks", JSON.stringify(squeaks));
+}
   res.redirect("/home");
 };
 
