@@ -192,7 +192,6 @@ const postHome = (req, res) => {
   if(req.body.csrf == SESSION_IDS[cookie.sessionid] && req.body.csrf)
   {
     flag = true;
-    console.log("flag true")
   }
 
   if(flag){
