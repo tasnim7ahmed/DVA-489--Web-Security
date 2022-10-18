@@ -33,9 +33,10 @@ const postSignIn = (req, res) => {
     console.log(JSON.stringify(squeak_session));
 
     // res.cookie('squeak_session',squeak_session, { maxAge: 900000, httpOnly: true });
-    // httpOnly: true will protect the cookie. this is disabled now to implement the attack
+    // httpOnly: true will protect the cookie. this is enabled in the patched version
 
     res.cookie("squeak_session", squeak_session, {
+      maxAge: 900000,
       secure: true,
       httpOnly: true,
     });
@@ -195,7 +196,8 @@ const postHome = (req, res) => {
   }
 
   if(flag){
-  // this part should go inside the previous if
+  
+
   squeaks = fs.readFileSync("squeaks", { encoding: "utf-8" });
   squeaks = JSON.parse(String(squeaks));
   keys = [];
