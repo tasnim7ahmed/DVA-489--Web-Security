@@ -59,9 +59,9 @@ const postSignUp = (req, res) => {
     flag = true;
   }
 
-
   if (flag) {
     console.log("Either Username or Password is invalid!");
+    res.redirect("/");
   } else {
     new_cred = JSON.stringify(credentials);
     new_cred = new_cred.slice(0, new_cred.length - 1);
