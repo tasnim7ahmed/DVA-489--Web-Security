@@ -55,6 +55,7 @@ const postSignUp = (req, res) => {
   }
 
   if (signuppassword.match(new RegExp(signupusername)) != null) {
+    console.log("Here!");
     console.log(signuppassword.match(new RegExp(signupusername)));
     flag = true;
   }
