@@ -189,8 +189,23 @@ const getHome = (req, res) => {
   console.log(req.session.csrf);
   console.log(SESSION_IDS[sessionID]);
 
-  let data = { currentUser: cookie.username, posts: posts, token: req.session.csrf, usernames:users };
-  console.log(data["usernames"]);
+
+  console.log("Here!")
+  sqks = []
+  sqls = []
+  for (let i =0; i<posts.length; i++)
+  {
+    rec = (posts[i]["receiver"])
+    if(rec == "@everyone")
+    {
+      sqks.push(posts[i])
+    }
+    else if(rec == cookie.username){
+      sqls.push(posts[i])
+    }
+  }
+
+  let data = { currentUser: cookie.username, posts_sqks: sqks, posts_sqls: sqls, token: req.session.csrf, usernames:users };
   res.render("homeView", data);
 
   // fs.readFile(__dirname + "/public/home.html", "utf8", (err, text) => {
@@ -202,7 +217,7 @@ const getHome = (req, res) => {
 
 const postHome = (req, res) => {
   console.log(req.body)
-  const { squeak } = req.body;
+  const { squeak, receiver } = req.body;
   //console.log(squeak)
   var cookie = req.cookies.squeak_session;
   var flag = false;
@@ -248,6 +263,7 @@ const postHome = (req, res) => {
   squeaks[post_id] = {
     username: cookie.username,
     post: squeak,
+    receiver: receiver,
     time: prnDt,
   };
 

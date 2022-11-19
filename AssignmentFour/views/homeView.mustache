@@ -33,7 +33,7 @@
             class="form-control"
             id="squeak"
           />
-          <select class="custom-select" id="inputGroupSelect01">
+          <select class="custom-select" id="inputGroupSelect01" name="receiver">
           <option selected value="@everyone">@everyone</option>
           {{#usernames}}
             <option value={{username}}>{{username}}</option>
@@ -49,8 +49,9 @@
         <button type="submit" class="btn btn-primary">Sign out</button>
       </form>
     </div>
-
-    <div class="container">{{#posts}}
+    
+    <div class="container"><h1>Squeaks</h1></div>
+    <div class="container">{{#posts_sqks}}
     <div class="card mb-2">
     <div class="card-header">
       {{username}}
@@ -63,7 +64,23 @@
     </div>
   </div>
     
-    {{/posts}}</div>
+    {{/posts_sqks}}</div>
+
+    <div class="container"><h1>Squeals</h1></div>
+    <div class="container">{{#posts_sqls}}
+    <div class="card mb-2">
+    <div class="card-header">
+      {{username}}
+      <span class="float-right">{{time}}</span>
+    </div>
+    <div class="card-body">
+      <p class="card-text">
+      {{post}}
+      </p>
+    </div>
+  </div>
+    
+    {{/posts_sqls}}</div>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
