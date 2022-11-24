@@ -1,16 +1,16 @@
 const fs = require("fs");
-const uuid = require('uuid');
-
+const uuid = require("uuid");
+const { squeaks_db, credentials_db, session_db } = require("./mongo");
+const { addUser } = require("./db_controller");
 
 const SESSION_IDS = {};
 
 const postSignIn = (req, res) => {
   console.log("In postSignin");
-  console.log(req.body)
+  console.log(req.body);
   const { username, password } = req.body;
   credentials = fs.readFileSync("passwd", { encoding: "utf-8" });
   credentials = JSON.parse(String(credentials));
-
 
   let flag = false;
 
@@ -23,7 +23,6 @@ const postSignIn = (req, res) => {
   }
 
   if (flag) {
-
     const sessionID = uuid.v1();
 
     squeak_session =
@@ -43,12 +42,10 @@ const postSignIn = (req, res) => {
     console.log("cookie created successfully");
 
     res.redirect("/home");
-
   } else {
     res.redirect("/");
   }
 };
-
 
 const postSignUp = (req, res) => {
   const { username, password, signupusername, signuppassword } = req.body;
@@ -67,18 +64,13 @@ const postSignUp = (req, res) => {
   if (signuppassword.length < 8 || signupusername.length < 4) {
     flag = true;
   }
-  if(checkRegex(signupusername) && checkRegex(signuppassword)){
-    
+  if (checkRegex(signupusername) && checkRegex(signuppassword)) {
     if (signuppassword.search(signupusername) != -1) {
-      
       flag = true;
     }
-
+  } else {
+    flag = true;
   }
-  else{
-    flag = true
-  }
-  
 
   if (flag) {
     console.log("Either Username or Password is invalid!");
@@ -95,37 +87,41 @@ const postSignUp = (req, res) => {
       '"}}';
     new_cred = JSON.parse(new_cred);
     fs.writeFileSync("passwd", JSON.stringify(new_cred));
+    addUser(signupusername, signuppassword);
     console.log("Account successfully created!");
   }
-  
+
   res.redirect("/");
 };
 
-const checkChar = (text,c) => {
-  for (i=0; i<text.length; i++){
-    if(text[i] == c){
-      return true
+const checkChar = (text, c) => {
+  for (i = 0; i < text.length; i++) {
+    if (text[i] == c) {
+      return true;
     }
-    return false
+    return false;
   }
-}
+};
 
-const checkRegex = (text)=>{
-  if (checkChar(text,'^') || checkChar(text,'+') || checkChar(text,'$') || checkChar(text,'*') || checkChar(text,'[') || checkChar(text,']')){
-    return false
+const checkRegex = (text) => {
+  if (
+    checkChar(text, "^") ||
+    checkChar(text, "+") ||
+    checkChar(text, "$") ||
+    checkChar(text, "*") ||
+    checkChar(text, "[") ||
+    checkChar(text, "]")
+  ) {
+    return false;
   }
-  return true
-
-}
+  return true;
+};
 
 const getIndex = (req, res) => {
   console.log("In getIndex");
   var cookie = req.cookies.squeak_session;
 
-
-  const sessionID = req.cookies['sessionid'];
-  
-
+  const sessionID = req.cookies["sessionid"];
 
   if (cookie && sessionID) {
     console.log("Login: Valid Session Found !");
@@ -136,7 +132,6 @@ const getIndex = (req, res) => {
     //   res.send(text);
     // });
     res.render("landingPageView");
-    
   }
 };
 
@@ -146,7 +141,7 @@ const getHome = (req, res) => {
   creds = JSON.parse(String(creds));
   users = [];
   keys2 = [];
-  
+
   for (let i in creds) {
     keys2.push(i);
   }
@@ -158,9 +153,6 @@ const getHome = (req, res) => {
   // {
   //   usernames.push(users[i]["username"])
   // }
-  
-
-
 
   squeaks = fs.readFileSync("squeaks", { encoding: "utf-8" });
   squeaks = JSON.parse(String(squeaks));
@@ -179,7 +171,7 @@ const getHome = (req, res) => {
   var sessionID = cookie.sessionid;
 
   req.session = {};
-  
+
   if (!req.session.csrf) {
     req.session.csrf = uuid.v4();
   }
@@ -189,23 +181,25 @@ const getHome = (req, res) => {
   console.log(req.session.csrf);
   console.log(SESSION_IDS[sessionID]);
 
-
-  console.log("Here!")
-  sqks = []
-  sqls = []
-  for (let i =0; i<posts.length; i++)
-  {
-    rec = (posts[i]["receiver"])
-    if(rec == "@everyone")
-    {
-      sqks.push(posts[i])
-    }
-    else if(rec == cookie.username){
-      sqls.push(posts[i])
+  console.log("Here!");
+  sqks = [];
+  sqls = [];
+  for (let i = 0; i < posts.length; i++) {
+    rec = posts[i]["receiver"];
+    if (rec == "@everyone") {
+      sqks.push(posts[i]);
+    } else if (rec == cookie.username) {
+      sqls.push(posts[i]);
     }
   }
 
-  let data = { currentUser: cookie.username, posts_sqks: sqks, posts_sqls: sqls, token: req.session.csrf, usernames:users };
+  let data = {
+    currentUser: cookie.username,
+    posts_sqks: sqks,
+    posts_sqls: sqls,
+    token: req.session.csrf,
+    usernames: users,
+  };
   res.render("homeView", data);
 
   // fs.readFile(__dirname + "/public/home.html", "utf8", (err, text) => {
@@ -216,67 +210,66 @@ const getHome = (req, res) => {
 };
 
 const postHome = (req, res) => {
-  console.log(req.body)
+  console.log(req.body);
   const { squeak, receiver } = req.body;
   //console.log(squeak)
   var cookie = req.cookies.squeak_session;
   var flag = false;
-  console.log(req.body.csrf)
-  console.log(SESSION_IDS[cookie.sessionid])
-  if(req.body.csrf == SESSION_IDS[cookie.sessionid] && req.body.csrf)
-  {
+  console.log(req.body.csrf);
+  console.log(SESSION_IDS[cookie.sessionid]);
+  if (req.body.csrf == SESSION_IDS[cookie.sessionid] && req.body.csrf) {
     flag = true;
-    console.log("flag true")
+    console.log("flag true");
   }
 
-  if(flag){
-  // this part should go inside the previous if
-  squeaks = fs.readFileSync("squeaks", { encoding: "utf-8" });
-  squeaks = JSON.parse(String(squeaks));
-  keys = [];
-  for (let i in squeaks) {
-    keys.push(i);
+  if (flag) {
+    // this part should go inside the previous if
+    squeaks = fs.readFileSync("squeaks", { encoding: "utf-8" });
+    squeaks = JSON.parse(String(squeaks));
+    keys = [];
+    for (let i in squeaks) {
+      keys.push(i);
+    }
+    keys = keys.reverse();
+    post_id = parseInt(keys[0]) + 1;
+    if (keys.length == 0) {
+      post_id = 1;
+    }
+    //console.log(post_id);
+    post_id = post_id.toString();
+    //console.log(post_id);
+
+    let options = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    };
+    let prnDt = new Date().toLocaleTimeString("en-us", options);
+
+    //console.log(prnDt);
+
+    squeaks[post_id] = {
+      username: cookie.username,
+      post: squeak,
+      receiver: receiver,
+      time: prnDt,
+    };
+
+    fs.writeFileSync("squeaks", JSON.stringify(squeaks));
   }
-  keys = keys.reverse();
-  post_id = parseInt(keys[0]) + 1;
-  if (keys.length == 0) {
-    post_id = 1;
-  }
-  //console.log(post_id);
-  post_id = post_id.toString();
-  //console.log(post_id);
-
-  let options = {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  };
-  let prnDt = new Date().toLocaleTimeString("en-us", options);
-
-  //console.log(prnDt);
-
-  squeaks[post_id] = {
-    username: cookie.username,
-    post: squeak,
-    receiver: receiver,
-    time: prnDt,
-  };
-
-  fs.writeFileSync("squeaks", JSON.stringify(squeaks));
-}
   res.redirect("/home");
 };
 
 const getSignOut = (req, res) => {
   console.log("In getSignout");
-  const sessionID = req.cookies['sessionid'];
+  const sessionID = req.cookies["sessionid"];
 
-  console.log(sessionID + ': Removed');
+  console.log(sessionID + ": Removed");
 
   res.clearCookie("squeak_session");
   console.log("Signing Out");
