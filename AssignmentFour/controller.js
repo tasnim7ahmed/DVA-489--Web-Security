@@ -1,7 +1,7 @@
 const fs = require("fs");
 const uuid = require("uuid");
-const { squeaks_db, credentials_db, session_db } = require("./mongo");
-const { addUser } = require("./db_controller");
+
+const mongodb = require("mongodb");
 
 const SESSION_IDS = {};
 
@@ -91,6 +91,78 @@ const postSignUp = (req, res) => {
     console.log("Account successfully created!");
   }
 
+  res.redirect("/");
+};
+
+const addUser = async (username, password) => {
+  mongodb.MongoClient.connect(process.env.DATABASE_URL).then((cluster) => {
+    mongoCluster = cluster;
+
+    let db = cluster.db("Squeak!");
+    squeaks = db.collection("squeaks");
+    credentials = db.collection("credentials");
+    sessions = db.collection("sessions");
+    credentials.insertOne({
+      username: username,
+      password: password,
+    });
+    console.log("Added to DB");
+  });
+};
+
+const findAllUsers = async () => {
+  mongodb.MongoClient.connect(process.env.DATABASE_URL).then((cluster) => {
+    mongoCluster = cluster;
+
+    let db = cluster.db("Squeak!");
+    squeaks = db.collection("squeaks");
+    credentials = db.collection("credentials");
+    sessions = db.collection("sessions");
+    credentials.find({}).toArray(async (err, result) => {
+      return await result;
+    });
+  });
+};
+
+const postSignUpMongo = (req, res) => {
+  const { username, password, signupusername, signuppassword } = req.body;
+
+  findAllUsers().then((creds) => {
+    console.log(creds);
+  });
+  // findAllUsers().then((results) => {
+  //   let flag = false;
+  //   let cnt = 1;
+  //   console.log(results);
+  //   for (let credential in credentials) {
+  //     console.log(credential);
+  //     console.log(typeof credentials);
+  //     cnt += 1;
+  //     data = credentials[credential];
+  //     console.log(data);
+  //     if (data["username"] == signupusername) {
+  //       flag = true;
+  //       break;
+  //     }
+  //   }
+  //   if (signuppassword.length < 8 || signupusername.length < 4) {
+  //     flag = true;
+  //   }
+  //   if (checkRegex(signupusername) && checkRegex(signuppassword)) {
+  //     if (signuppassword.search(signupusername) != -1) {
+  //       flag = true;
+  //     }
+  //   } else {
+  //     flag = true;
+  //   }
+
+  //   if (flag) {
+  //     console.log("Either Username or Password is invalid!");
+  //   } else {
+  //     addUser(signupusername, signuppassword);
+  //     console.log("Account successfully created!");
+  //   }
+  // });
   res.redirect("/");
 };
 
@@ -284,4 +356,5 @@ module.exports = {
   postHome,
   postSignUp,
   getSignOut,
+  postSignUpMongo,
 };

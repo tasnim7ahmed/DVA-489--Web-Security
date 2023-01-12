@@ -9,12 +9,13 @@ const {
   getIndex,
   getHome,
   postHome,
+  postSignUpMongo,
 } = require("./controller");
 
 router.post("/home", isAuthenticated, postHome);
 router.get("/home", isAuthenticated, getHome);
 router.post("/signin", postSignIn);
-router.post("/signup", postSignUp);
+router.post("/signup", postSignUpMongo);
 router.get("/signout", getSignOut);
 router.get("/", getIndex);
 
