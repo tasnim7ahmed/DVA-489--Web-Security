@@ -1,7 +1,15 @@
 const fs = require("fs");
 const uuid = require("uuid");
 
-const mongodb = require("mongodb");
+const {
+  findAllUsers,
+  findAllSessions,
+  findAllSqueaks,
+  addUser,
+  addSession,
+  addSqueak,
+  deleteSession,
+} = require("./mongo");
 
 const SESSION_IDS = {};
 
@@ -9,160 +17,73 @@ const postSignIn = (req, res) => {
   console.log("In postSignin");
   console.log(req.body);
   const { username, password } = req.body;
-  credentials = fs.readFileSync("passwd", { encoding: "utf-8" });
-  credentials = JSON.parse(String(credentials));
 
-  let flag = false;
-
-  for (let credential in credentials) {
-    data = credentials[credential];
-    if (data["username"] == username && data["password"] == password) {
-      flag = true;
-      break;
+  findAllUsers().then((credentials) => {
+    let flag = false;
+    for (let credential in credentials) {
+      data = credentials[credential];
+      if (data["username"] == username && data["password"] == password) {
+        flag = true;
+        break;
+      }
     }
-  }
 
-  if (flag) {
-    const sessionID = uuid.v1();
+    if (flag) {
+      const sessionID = uuid.v1();
 
-    squeak_session =
-      '{"sessionid":"' + sessionID + '","username":"' + username + '"}';
-    squeak_session = JSON.parse(squeak_session);
+      squeak_session =
+        '{"sessionid":"' + sessionID + '","username":"' + username + '"}';
+      squeak_session = JSON.parse(squeak_session);
 
-    console.log(JSON.stringify(squeak_session));
+      console.log(JSON.stringify(squeak_session));
 
-    // res.cookie('squeak_session',squeak_session, { maxAge: 900000, httpOnly: true });
-    // httpOnly: true will protect the cookie. this is disabled now to implement the attack
+      res.cookie("squeak_session", squeak_session, {
+        secure: true,
+        httpOnly: true,
+      });
+      console.log("cookie created successfully");
+      addSession(sessionID, username);
 
-    res.cookie("squeak_session", squeak_session, {
-      secure: true,
-      httpOnly: true,
-    });
-
-    console.log("cookie created successfully");
-
-    res.redirect("/home");
-  } else {
-    res.redirect("/");
-  }
+      res.redirect("/home");
+    } else {
+      res.redirect("/");
+    }
+  });
 };
 
 const postSignUp = (req, res) => {
   const { username, password, signupusername, signuppassword } = req.body;
-  credentials = fs.readFileSync("passwd", { encoding: "utf-8" });
-  credentials = JSON.parse(String(credentials));
-  let flag = false;
-  let cnt = 1;
-  for (let credential in credentials) {
-    cnt += 1;
-    data = credentials[credential];
-    if (data["username"] == signupusername) {
-      flag = true;
-      break;
+
+  findAllUsers().then((credentials) => {
+    let flag = false;
+    let cnt = 1;
+    for (let credential in credentials) {
+      cnt += 1;
+      data = credentials[credential];
+      console.log(data);
+      if (data["username"] == signupusername) {
+        flag = true;
+        break;
+      }
     }
-  }
-  if (signuppassword.length < 8 || signupusername.length < 4) {
-    flag = true;
-  }
-  if (checkRegex(signupusername) && checkRegex(signuppassword)) {
-    if (signuppassword.search(signupusername) != -1) {
+    if (signuppassword.length < 8 || signupusername.length < 4) {
       flag = true;
     }
-  } else {
-    flag = true;
-  }
+    if (checkRegex(signupusername) && checkRegex(signuppassword)) {
+      if (signuppassword.search(signupusername) != -1) {
+        flag = true;
+      }
+    } else {
+      flag = true;
+    }
 
-  if (flag) {
-    console.log("Either Username or Password is invalid!");
-  } else {
-    new_cred = JSON.stringify(credentials);
-    new_cred = new_cred.slice(0, new_cred.length - 1);
-    new_cred +=
-      ',"' +
-      cnt +
-      '": {"username":"' +
-      signupusername +
-      '", "password":"' +
-      signuppassword +
-      '"}}';
-    new_cred = JSON.parse(new_cred);
-    fs.writeFileSync("passwd", JSON.stringify(new_cred));
-    addUser(signupusername, signuppassword);
-    console.log("Account successfully created!");
-  }
-
-  res.redirect("/");
-};
-
-const addUser = async (username, password) => {
-  mongodb.MongoClient.connect(process.env.DATABASE_URL).then((cluster) => {
-    mongoCluster = cluster;
-
-    let db = cluster.db("Squeak!");
-    squeaks = db.collection("squeaks");
-    credentials = db.collection("credentials");
-    sessions = db.collection("sessions");
-    credentials.insertOne({
-      username: username,
-      password: password,
-    });
-    console.log("Added to DB");
+    if (flag) {
+      console.log("Either Username or Password is invalid!");
+    } else {
+      addUser(signupusername, signuppassword);
+      console.log("Account successfully created!");
+    }
   });
-};
-
-const findAllUsers = async () => {
-  mongodb.MongoClient.connect(process.env.DATABASE_URL).then((cluster) => {
-    mongoCluster = cluster;
-
-    let db = cluster.db("Squeak!");
-    squeaks = db.collection("squeaks");
-    credentials = db.collection("credentials");
-    sessions = db.collection("sessions");
-    credentials.find({}).toArray(async (err, result) => {
-      return await result;
-    });
-  });
-};
-
-const postSignUpMongo = (req, res) => {
-  const { username, password, signupusername, signuppassword } = req.body;
-
-  findAllUsers().then((creds) => {
-    console.log(creds);
-  });
-  // findAllUsers().then((results) => {
-  //   let flag = false;
-  //   let cnt = 1;
-  //   console.log(results);
-  //   for (let credential in credentials) {
-  //     console.log(credential);
-  //     console.log(typeof credentials);
-  //     cnt += 1;
-  //     data = credentials[credential];
-  //     console.log(data);
-  //     if (data["username"] == signupusername) {
-  //       flag = true;
-  //       break;
-  //     }
-  //   }
-  //   if (signuppassword.length < 8 || signupusername.length < 4) {
-  //     flag = true;
-  //   }
-  //   if (checkRegex(signupusername) && checkRegex(signuppassword)) {
-  //     if (signuppassword.search(signupusername) != -1) {
-  //       flag = true;
-  //     }
-  //   } else {
-  //     flag = true;
-  //   }
-
-  //   if (flag) {
-  //     console.log("Either Username or Password is invalid!");
-  //   } else {
-  //     addUser(signupusername, signuppassword);
-  //     console.log("Account successfully created!");
-  //   }
-  // });
   res.redirect("/");
 };
 
@@ -192,93 +113,96 @@ const checkRegex = (text) => {
 const getIndex = (req, res) => {
   console.log("In getIndex");
   var cookie = req.cookies.squeak_session;
-
-  const sessionID = req.cookies["sessionid"];
-
-  if (cookie && sessionID) {
-    console.log("Login: Valid Session Found !");
-    res.redirect("/home");
-  } else {
-    console.log("Valid Session Not Found", cookie);
-    // fs.readFile(__dirname + "/public/landingPage.html", "utf8", (err, text) => {
-    //   res.send(text);
-    // });
-    res.render("landingPageView");
+  let sessionID = "1";
+  if (cookie) {
+    sessionID = cookie["sessionid"];
   }
+
+  findAllSessions().then((sessions) => {
+    let flag = false;
+    for (let session in sessions) {
+      data = sessions[session];
+      console.log(data);
+      if (data["sessionID"] == sessionID) {
+        flag = true;
+        break;
+      }
+    }
+
+    if (flag) {
+      console.log("Login: Valid Session Found !");
+      res.redirect("/home");
+    } else {
+      console.log("Valid Session Not Found", cookie);
+      // fs.readFile(__dirname + "/public/landingPage.html", "utf8", (err, text) => {
+      //   res.send(text);
+      // });
+      res.render("landingPageView");
+    }
+  });
 };
 
 const getHome = (req, res) => {
   console.log("In getHome");
-  creds = fs.readFileSync("passwd", { encoding: "utf-8" });
-  creds = JSON.parse(String(creds));
-  users = [];
-  keys2 = [];
+  findAllUsers().then((creds) => {
+    users = [];
+    keys2 = [];
 
-  for (let i in creds) {
-    keys2.push(i);
-  }
-  for (let i in keys2) {
-    users.push(creds[keys2[i]]);
-  }
-  // usernames = []
-  // for (let i = 0;i<users.length;i++)
-  // {
-  //   usernames.push(users[i]["username"])
-  // }
-
-  squeaks = fs.readFileSync("squeaks", { encoding: "utf-8" });
-  squeaks = JSON.parse(String(squeaks));
-  posts = [];
-  keys = [];
-  for (let i in squeaks) {
-    keys.push(i);
-  }
-  keys = keys.reverse();
-
-  for (let i in keys) {
-    posts.push(squeaks[keys[i]]);
-  }
-
-  var cookie = req.cookies.squeak_session;
-  var sessionID = cookie.sessionid;
-
-  req.session = {};
-
-  if (!req.session.csrf) {
-    req.session.csrf = uuid.v4();
-  }
-
-  SESSION_IDS[sessionID] = req.session.csrf;
-
-  console.log(req.session.csrf);
-  console.log(SESSION_IDS[sessionID]);
-
-  console.log("Here!");
-  sqks = [];
-  sqls = [];
-  for (let i = 0; i < posts.length; i++) {
-    rec = posts[i]["receiver"];
-    if (rec == "@everyone") {
-      sqks.push(posts[i]);
-    } else if (rec == cookie.username) {
-      sqls.push(posts[i]);
+    for (let i in creds) {
+      keys2.push(i);
     }
-  }
+    for (let i in keys2) {
+      users.push(creds[keys2[i]]);
+    }
 
-  let data = {
-    currentUser: cookie.username,
-    posts_sqks: sqks,
-    posts_sqls: sqls,
-    token: req.session.csrf,
-    usernames: users,
-  };
-  res.render("homeView", data);
+    findAllSqueaks().then((squeaks) => {
+      posts = [];
+      keys = [];
+      for (let i in squeaks) {
+        keys.push(i);
+      }
+      keys = keys.reverse();
 
-  // fs.readFile(__dirname + "/public/home.html", "utf8", (err, text) => {
-  //   text = text.replace("{{currentUser}}", cookie.username);
-  //   text = text.replace("{{posts}}", posts);
-  //   res.send(text);
-  // });
+      for (let i in keys) {
+        posts.push(squeaks[keys[i]]);
+      }
+
+      var cookie = req.cookies.squeak_session;
+      var sessionID = cookie.sessionid;
+
+      req.session = {};
+
+      if (!req.session.csrf) {
+        req.session.csrf = uuid.v4();
+      }
+
+      SESSION_IDS[sessionID] = req.session.csrf;
+
+      console.log(req.session.csrf);
+      console.log(SESSION_IDS[sessionID]);
+
+      console.log("Here!");
+      sqks = [];
+      sqls = [];
+      for (let i = 0; i < posts.length; i++) {
+        rec = posts[i]["receiver"];
+        if (rec == "@everyone") {
+          sqks.push(posts[i]);
+        } else if (rec == cookie.username) {
+          sqls.push(posts[i]);
+        }
+      }
+
+      let data = {
+        currentUser: cookie.username,
+        posts_sqks: sqks,
+        posts_sqls: sqls,
+        token: req.session.csrf,
+        usernames: users,
+      };
+      res.render("homeView", data);
+    });
+  });
 };
 
 const postHome = (req, res) => {
@@ -296,20 +220,6 @@ const postHome = (req, res) => {
 
   if (flag) {
     // this part should go inside the previous if
-    squeaks = fs.readFileSync("squeaks", { encoding: "utf-8" });
-    squeaks = JSON.parse(String(squeaks));
-    keys = [];
-    for (let i in squeaks) {
-      keys.push(i);
-    }
-    keys = keys.reverse();
-    post_id = parseInt(keys[0]) + 1;
-    if (keys.length == 0) {
-      post_id = 1;
-    }
-    //console.log(post_id);
-    post_id = post_id.toString();
-    //console.log(post_id);
 
     let options = {
       weekday: "long",
@@ -323,30 +233,24 @@ const postHome = (req, res) => {
     };
     let prnDt = new Date().toLocaleTimeString("en-us", options);
 
-    //console.log(prnDt);
-
-    squeaks[post_id] = {
-      username: cookie.username,
-      post: squeak,
-      receiver: receiver,
-      time: prnDt,
-    };
-
-    fs.writeFileSync("squeaks", JSON.stringify(squeaks));
+    addSqueak(cookie.username, squeak, receiver, prnDt).then(() => {
+      res.redirect("/home");
+    });
   }
-  res.redirect("/home");
 };
 
 const getSignOut = (req, res) => {
   console.log("In getSignout");
-  const sessionID = req.cookies["sessionid"];
+  const sessionID = req.cookies.squeak_session["sessionid"];
 
   console.log(sessionID + ": Removed");
 
   res.clearCookie("squeak_session");
-  console.log("Signing Out");
+  deleteSession(sessionID).then(() => {
+    console.log("Signing Out");
 
-  res.redirect("/");
+    res.redirect("/");
+  });
 };
 
 module.exports = {
@@ -356,5 +260,4 @@ module.exports = {
   postHome,
   postSignUp,
   getSignOut,
-  postSignUpMongo,
 };
